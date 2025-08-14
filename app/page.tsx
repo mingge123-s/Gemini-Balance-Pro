@@ -17,9 +17,6 @@ import {
   Clock,
   Users
 } from 'lucide-react';
-import { format } from 'date-fns';
-import { zhCN } from 'date-fns/locale';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 interface ApiKey {
   key: string;
@@ -338,37 +335,23 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* 图表 */}
+            {/* 图表 - 简化版本 */}
             {chartData.length > 0 && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white rounded-lg shadow p-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    API Key 请求统计
-                  </h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="requests" fill="#3B82F6" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-
-                <div className="bg-white rounded-lg shadow p-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    API Key 成功率
-                  </h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis domain={[0, 100]} />
-                      <Tooltip formatter={(value) => `${value}%`} />
-                      <Bar dataKey="successRate" fill="#10B981" />
-                    </BarChart>
-                  </ResponsiveContainer>
+              <div className="bg-white rounded-lg shadow p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  API Key 统计
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {chartData.map((data, index) => (
+                    <div key={index} className="border rounded-lg p-4">
+                      <h4 className="font-medium text-gray-900">{data.name}</h4>
+                      <div className="mt-2 space-y-1 text-sm text-gray-600">
+                        <div>请求: {data.requests}</div>
+                        <div>错误: {data.errors}</div>
+                        <div>成功率: {data.successRate.toFixed(1)}%</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -477,7 +460,7 @@ const Dashboard = () => {
                             {key.lastUsed && (
                               <span className="flex items-center">
                                 <Clock className="h-3 w-3 mr-1" />
-                                {format(new Date(key.lastUsed), 'MM-dd HH:mm', { locale: zhCN })}
+                                {new Date(key.lastUsed).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
                               </span>
                             )}
                           </div>
@@ -539,7 +522,7 @@ const Dashboard = () => {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
                             <p className="text-sm text-gray-500">
-                              {format(new Date(log.timestamp), 'yyyy-MM-dd HH:mm:ss', { locale: zhCN })}
+                              {new Date(log.timestamp).toLocaleString('zh-CN')}
                             </p>
                             <span className="text-xs font-mono text-gray-400">
                               {log.apiKey.substring(0, 10)}...
